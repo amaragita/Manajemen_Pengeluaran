@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "988768703910",
+    "project_id": "manajemen-pengeluaran",
+    "storage_bucket": "manajemen-pengeluaran.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988768703910:android:0a8a96889baff0f003eb67",
+        "android_client_info": {
+          "package_name": "com.mobile.manajemen_pengeluaran"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVQQk8dN6y_dFu3Uo658WWmGI9LJcarqc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
