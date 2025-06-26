@@ -99,15 +99,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: Icon(
                     themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
                   ),
-                  title: const Text('Mode Gelap'),
+                  title: const Text('Tema'),
                   trailing: Switch(
                     value: themeProvider.isDarkMode,
                     onChanged: (v) async {
                       await themeProvider.toggleTheme();
                       _showSnackBar(
                         themeProvider.isDarkMode 
-                          ? 'Mode gelap diaktifkan' 
-                          : 'Mode terang diaktifkan'
+                          ? 'Tema gelap diaktifkan' 
+                          : 'Tema terang diaktifkan'
                       );
                     },
                   ),

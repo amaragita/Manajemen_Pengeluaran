@@ -79,28 +79,28 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 60),
                 const Text(
-                  'Manajemen Keuangan',
+                  'Manajemen Pengeluaran',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,
                     color: kPrimaryColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 60),
                 CircleAvatar(
                   radius: 56,
                   backgroundColor: kAccentColor,
                   child: Icon(
-                    Icons.account_balance_wallet,
+                    Icons.monetization_on,
                     size: 56,
                     color: kPrimaryColor,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 60),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -150,13 +150,36 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                                  // TODO: Implement forgot password functionality
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Fitur Lupa Kata Sandi belum tersedia')),
+                                  );
+                                },
+                          child: const Text(
+                            'Lupa Kata Sandi?',
+                            style: TextStyle(
+                              color: kPrimaryColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: kButtonColor,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -173,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 )
                               : const Text(
                                   'Masuk',
-                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                  style: TextStyle(fontSize: 15, color: Colors.white),
                                 ),
                         ),
                       ),
