@@ -38,6 +38,9 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Menu Utama'),
@@ -106,8 +109,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: Colors.blue.shade100,
-                      child: const Icon(Icons.account_circle, size: 40, color: Colors.blue),
+                      backgroundColor: isDark ? Colors.blue.shade900 : Colors.blue.shade100,
+                      child: Icon(Icons.account_circle, size: 40, color: isDark ? Colors.blue.shade300 : Colors.blue),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -116,10 +119,19 @@ class _DashboardPageState extends State<DashboardPage> {
                         children: [
                           Text(
                             _username != null ? 'Halo, $_username!' : 'Halo!',
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 20, 
+                              fontWeight: FontWeight.bold,
+                              color: theme.textTheme.titleLarge?.color,
+                            ),
                           ),
                           const SizedBox(height: 4),
-                          const Text('Selamat datang kembali!', style: TextStyle(color: Colors.black54)),
+                          Text(
+                            'Selamat datang kembali!', 
+                            style: TextStyle(
+                              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -129,17 +141,27 @@ class _DashboardPageState extends State<DashboardPage> {
                 Card(
                   elevation: 2,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  color: Colors.blue.shade50,
+                  color: isDark ? Colors.blue.shade900.withOpacity(0.3) : Colors.blue.shade50,
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Total Pengeluaran', style: TextStyle(fontSize: 16, color: Colors.black54)),
+                        Text(
+                          'Total Pengeluaran', 
+                          style: TextStyle(
+                            fontSize: 16, 
+                            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                          ),
+                        ),
                         const SizedBox(height: 8),
                         Text(
                           currencyFormat.format(totalExpenses),
-                          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue),
+                          style: TextStyle(
+                            fontSize: 28, 
+                            fontWeight: FontWeight.bold, 
+                            color: isDark ? Colors.blue.shade300 : Colors.blue,
+                          ),
                         ),
                       ],
                     ),
@@ -150,17 +172,27 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     Expanded(
                       child: Card(
-                        color: Colors.orange.shade50,
+                        color: isDark ? Colors.orange.shade900.withOpacity(0.3) : Colors.orange.shade50,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                           child: Column(
                             children: [
-                              const Text('Minggu Ini', style: TextStyle(fontSize: 14, color: Colors.black54)),
+                              Text(
+                                'Minggu Ini', 
+                                style: TextStyle(
+                                  fontSize: 14, 
+                                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               Text(
                                 currencyFormat.format(weekExpenses),
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange),
+                                style: TextStyle(
+                                  fontSize: 18, 
+                                  fontWeight: FontWeight.bold, 
+                                  color: isDark ? Colors.orange.shade300 : Colors.orange,
+                                ),
                               ),
                             ],
                           ),
@@ -170,17 +202,27 @@ class _DashboardPageState extends State<DashboardPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Card(
-                        color: Colors.green.shade50,
+                        color: isDark ? Colors.green.shade900.withOpacity(0.3) : Colors.green.shade50,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                           child: Column(
                             children: [
-                              const Text('Bulan Ini', style: TextStyle(fontSize: 14, color: Colors.black54)),
+                              Text(
+                                'Bulan Ini', 
+                                style: TextStyle(
+                                  fontSize: 14, 
+                                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               Text(
                                 currencyFormat.format(monthExpenses),
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+                                style: TextStyle(
+                                  fontSize: 18, 
+                                  fontWeight: FontWeight.bold, 
+                                  color: isDark ? Colors.green.shade300 : Colors.green,
+                                ),
                               ),
                             ],
                           ),
@@ -190,10 +232,22 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                const Text('Pengeluaran Terakhir', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  'Pengeluaran Terakhir', 
+                  style: TextStyle(
+                    fontSize: 16, 
+                    fontWeight: FontWeight.bold,
+                    color: theme.textTheme.titleLarge?.color,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 if (recentExpenses.isEmpty)
-                  const Text('Belum ada pengeluaran.', style: TextStyle(color: Colors.black54)),
+                  Text(
+                    'Belum ada pengeluaran.', 
+                    style: TextStyle(
+                      color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    ),
+                  ),
                 ...recentExpenses.map((doc) {
                   final amount = doc['amount'] is int ? (doc['amount'] as int).toDouble() : doc['amount'];
                   final date = (doc['date'] as Timestamp).toDate();
@@ -201,10 +255,30 @@ class _DashboardPageState extends State<DashboardPage> {
                     margin: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     child: ListTile(
-                      leading: Icon(_iconForCategory(doc['category']), color: _DashboardPageState.kCategoryColors[doc['category']] ?? Colors.blue.shade400),
-                      title: Text(doc['description'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text('${doc['category']} - ${DateFormat('dd/MM/yyyy').format(date)}'),
-                      trailing: Text(currencyFormat.format(amount), style: const TextStyle(fontWeight: FontWeight.bold)),
+                      leading: Icon(
+                        _iconForCategory(doc['category']), 
+                        color: kCategoryColors[doc['category']] ?? Colors.blue.shade400,
+                      ),
+                      title: Text(
+                        doc['description'], 
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: theme.textTheme.titleMedium?.color,
+                        ),
+                      ),
+                      subtitle: Text(
+                        '${doc['category']} - ${DateFormat('dd/MM/yyyy').format(date)}',
+                        style: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                        ),
+                      ),
+                      trailing: Text(
+                        currencyFormat.format(amount), 
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: theme.textTheme.titleMedium?.color,
+                        ),
+                      ),
                     ),
                   );
                 }),

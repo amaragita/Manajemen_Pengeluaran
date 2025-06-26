@@ -3,6 +3,11 @@ import 'package:intl/intl.dart';
 import '../models/expense.dart';
 import '../database/database_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 const Color kDarkBlue = Color(0xFF0D3458);
 
@@ -21,6 +26,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final _amountController = TextEditingController();
   late DateTime _selectedDate;
   String _selectedCategory = 'Makanan';
+  String? _imagePath;
+  final ImagePicker _picker = ImagePicker();
 
   final List<String> _categories = [
     'Makanan',
@@ -40,6 +47,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       _amountController.text = _thousandFormat.format(widget.expense!.amount);
       _selectedDate = widget.expense!.date;
       _selectedCategory = widget.expense!.category;
+      _imagePath = widget.expense!.imagePath;
     } else {
       _selectedDate = DateTime.now();
     }
@@ -96,12 +104,24 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
   void _saveExpense() async {
     if (_formKey.currentState!.validate()) {
+      String? imageUrl;
+      if (_imagePath != null) {
+        if (_imagePath!.startsWith('http')) {
+          // Sudah berupa URL, tidak perlu upload ulang
+          imageUrl = _imagePath;
+        } else {
+          // Path lokal, upload ke Imgur
+          imageUrl = await _uploadImageToImgur(_imagePath!);
+        }
+      }
+
       final expense = Expense(
         id: widget.expense?.id,
         description: _descriptionController.text,
         amount: double.parse(_amountController.text.replaceAll('.', '').replaceAll(',', '')),
         date: _selectedDate,
         category: _selectedCategory,
+        imagePath: imageUrl,
       );
 
       if (widget.expense == null) {
@@ -112,6 +132,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           'amount': expense.amount,
           'date': Timestamp.fromDate(expense.date),
           'category': expense.category,
+          'imagePath': expense.imagePath,
         });
       } else {
         await DatabaseHelper.instance.updateExpense(expense);
@@ -129,6 +150,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             'amount': expense.amount,
             'date': Timestamp.fromDate(expense.date),
             'category': expense.category,
+            'imagePath': expense.imagePath,
           });
         }
       }
@@ -139,17 +161,127 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     }
   }
 
+  Future<void> _takePicture() async {
+    // Request camera permission
+    var status = await Permission.camera.status;
+    if (!status.isGranted) {
+      status = await Permission.camera.request();
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Izin kamera diperlukan untuk mengambil foto')),
+        );
+        return;
+      }
+    }
+
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+      );
+      
+      if (photo != null) {
+        setState(() {
+          _imagePath = photo.path;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error mengambil foto: $e')),
+      );
+    }
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+      
+      if (image != null) {
+        setState(() {
+          _imagePath = image.path;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error memilih gambar: $e')),
+      );
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Pilih Sumber Gambar'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Kamera'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _takePicture();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Galeri'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImageFromGallery();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<String?> _uploadImageToImgur(String imagePath) async {
+    const clientId = 'ce914dbe81f558a';
+    final url = Uri.parse('https://api.imgur.com/3/image');
+    final imageBytes = await File(imagePath).readAsBytes();
+    final base64Image = base64Encode(imageBytes);
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Client-ID $clientId',
+      },
+      body: {
+        'image': base64Image,
+        'type': 'base64',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['data']['link'];
+    } else {
+      print('Imgur upload failed: \\${response.body}');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: kDarkBlue),
+        iconTheme: theme.appBarTheme.iconTheme ?? IconThemeData(color: theme.colorScheme.primary),
         title: Text(
           widget.expense == null ? 'Tambah Pengeluaran' : 'Edit Pengeluaran',
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.normal),
+          style: theme.appBarTheme.titleTextStyle ?? TextStyle(color: theme.colorScheme.onBackground),
         ),
       ),
       body: Center(
@@ -159,6 +291,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             child: Card(
               elevation: 6,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              color: theme.cardColor,
               child: Padding(
                 padding: const EdgeInsets.all(22.0),
                 child: Form(
@@ -168,10 +301,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     children: [
                       TextFormField(
                         controller: _descriptionController,
+                        style: theme.textTheme.bodyLarge,
                         decoration: InputDecoration(
                           labelText: 'Deskripsi',
-                          prefixIcon: const Icon(Icons.description, color: kDarkBlue),
+                          labelStyle: theme.textTheme.bodyMedium,
+                          prefixIcon: Icon(Icons.description, color: theme.colorScheme.primary),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          filled: true,
+                          fillColor: theme.inputDecorationTheme.fillColor ?? (isDark ? theme.cardColor : Colors.white),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -183,10 +320,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       const SizedBox(height: 18),
                       TextFormField(
                         controller: _amountController,
+                        style: theme.textTheme.bodyLarge,
                         decoration: InputDecoration(
                           labelText: 'Jumlah (Rp)',
-                          prefixIcon: const Icon(Icons.attach_money, color: kDarkBlue),
+                          labelStyle: theme.textTheme.bodyMedium,
+                          prefixIcon: Icon(Icons.attach_money, color: theme.colorScheme.primary),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          filled: true,
+                          fillColor: theme.inputDecorationTheme.fillColor ?? (isDark ? theme.cardColor : Colors.white),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
@@ -207,14 +348,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         child: InputDecorator(
                           decoration: InputDecoration(
                             labelText: 'Tanggal',
-                            prefixIcon: const Icon(Icons.date_range, color: kDarkBlue),
+                            labelStyle: theme.textTheme.bodyMedium,
+                            prefixIcon: Icon(Icons.date_range, color: theme.colorScheme.primary),
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            filled: true,
+                            fillColor: theme.inputDecorationTheme.fillColor ?? (isDark ? theme.cardColor : Colors.white),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(DateFormat('dd/MM/yyyy').format(_selectedDate)),
-                              const Icon(Icons.edit_calendar, color: kDarkBlue),
+                              Text(DateFormat('dd/MM/yyyy').format(_selectedDate), style: theme.textTheme.bodyLarge),
+                              Icon(Icons.edit_calendar, color: theme.colorScheme.primary),
                             ],
                           ),
                         ),
@@ -222,15 +366,20 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       const SizedBox(height: 18),
                       DropdownButtonFormField<String>(
                         value: _selectedCategory,
+                        style: theme.textTheme.bodyLarge,
+                        dropdownColor: theme.cardColor,
                         decoration: InputDecoration(
                           labelText: 'Kategori',
-                          prefixIcon: const Icon(Icons.category, color: kDarkBlue),
+                          labelStyle: theme.textTheme.bodyMedium,
+                          prefixIcon: Icon(Icons.category, color: theme.colorScheme.primary),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                          filled: true,
+                          fillColor: theme.inputDecorationTheme.fillColor ?? (isDark ? theme.cardColor : Colors.white),
                         ),
                         items: _categories.map((String category) {
                           return DropdownMenuItem(
                             value: category,
-                            child: Text(category),
+                            child: Text(category, style: theme.textTheme.bodyLarge),
                           );
                         }).toList(),
                         onChanged: (String? newValue) {
@@ -241,15 +390,89 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           }
                         },
                       ),
+                      const SizedBox(height: 18),
+                      // Image Section
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Foto Bukti Pengeluaran',
+                            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500, color: theme.colorScheme.primary),
+                          ),
+                          const SizedBox(height: 8),
+                          if (_imagePath != null && _imagePath!.isNotEmpty)
+                            Container(
+                              width: double.infinity,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: theme.colorScheme.primary),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: _imagePath!.startsWith('http')
+                                    ? Image.network(
+                                        _imagePath!,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Center(child: Icon(Icons.broken_image, size: 48, color: theme.colorScheme.primary)),
+                                      )
+                                    : Image.file(
+                                        File(_imagePath!),
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => Center(child: Icon(Icons.broken_image, size: 48, color: theme.colorScheme.primary)),
+                                      ),
+                              ),
+                            ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: _showImageSourceDialog,
+                                  icon: Icon(Icons.camera_alt, color: theme.colorScheme.primary),
+                                  label: Text(
+                                    'Ambil Foto',
+                                    style: TextStyle(color: theme.colorScheme.primary),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: theme.colorScheme.primary),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    backgroundColor: theme.inputDecorationTheme.fillColor ?? (isDark ? theme.cardColor : Colors.white),
+                                  ),
+                                ),
+                              ),
+                              if (_imagePath != null) ...[
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _imagePath = null;
+                                    });
+                                  },
+                                  icon: Icon(Icons.delete, color: Colors.red),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Colors.red.withOpacity(0.1),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 28),
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
                           onPressed: _saveExpense,
                           style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: kDarkBlue,
-                            side: const BorderSide(color: kDarkBlue, width: 2),
+                            backgroundColor: theme.colorScheme.primary,
+                            foregroundColor: theme.colorScheme.onPrimary,
+                            side: BorderSide(color: theme.colorScheme.primary, width: 2),
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -258,7 +481,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           ),
                           child: Text(
                             widget.expense == null ? 'Tambah Pengeluaran' : 'Simpan Perubahan',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: kDarkBlue),
+                            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onPrimary),
                           ),
                         ),
                       ),

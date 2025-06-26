@@ -20,8 +20,9 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
@@ -32,9 +33,16 @@ class DatabaseHelper {
         description TEXT NOT NULL,
         amount REAL NOT NULL,
         date TEXT NOT NULL,
-        category TEXT NOT NULL
+        category TEXT NOT NULL,
+        imagePath TEXT
       )
     ''');
+  }
+
+  Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE expenses ADD COLUMN imagePath TEXT');
+    }
   }
 
   Future<int> insertExpense(Expense expense) async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/preferences_helper.dart';
 import 'package:intl/intl.dart';
+import 'main_navigation.dart';
 
 const Color kDarkBlue = Color(0xFF0D3458);
 
@@ -47,6 +48,8 @@ class _AccountPageState extends State<AccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Akun'),
@@ -59,18 +62,18 @@ class _AccountPageState extends State<AccountPage> {
             children: [
               CircleAvatar(
                 radius: 48,
-                backgroundColor: kDarkBlue.withOpacity(0.1),
-                child: const Icon(Icons.account_circle, size: 80, color: kDarkBlue),
+                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                child: Icon(Icons.account_circle, size: 80, color: theme.colorScheme.primary),
               ),
               const SizedBox(height: 24),
               Text(
                 _username != null ? _username! : '-',
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: kDarkBlue),
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Nama Pengguna',
-                style: TextStyle(fontSize: 15, color: Colors.black54),
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
               ),
               const SizedBox(height: 32),
               Row(
@@ -118,8 +121,8 @@ class _AccountPageState extends State<AccountPage> {
                   icon: const Icon(Icons.logout),
                   label: const Text('Logout'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: kDarkBlue,
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -150,25 +153,26 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      color: kDarkBlue.withOpacity(0.07),
+      color: theme.cardColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: kDarkBlue, size: 32),
+            Icon(icon, color: theme.colorScheme.primary, size: 32),
             const SizedBox(height: 8),
             Text(
               isInt ? value.toString() : NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(value),
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: kDarkBlue),
+              style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
             ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(fontSize: 13, color: kDarkBlue),
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
             ),
           ],
         ),

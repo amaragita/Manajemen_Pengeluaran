@@ -4,6 +4,7 @@ class Expense {
   final double amount;
   final DateTime date;
   final String category;
+  final String? imagePath;
 
   Expense({
     this.id,
@@ -11,6 +12,7 @@ class Expense {
     required this.amount,
     required this.date,
     required this.category,
+    this.imagePath,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class Expense {
       'amount': amount,
       'date': date.toIso8601String(),
       'category': category,
+      'imagePath': imagePath,
     };
   }
 
@@ -30,6 +33,7 @@ class Expense {
       amount: map['amount'],
       date: DateTime.parse(map['date']),
       category: map['category'],
+      imagePath: map['imagePath'],
     );
   }
 } 
