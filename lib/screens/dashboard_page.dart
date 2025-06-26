@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/preferences_helper.dart';
 import '../models/expense.dart';
 import 'package:intl/intl.dart';
+import 'main_navigation.dart';
 
 class DashboardPage extends StatefulWidget {
   final VoidCallback onLogout;
@@ -110,7 +111,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     CircleAvatar(
                       radius: 28,
                       backgroundColor: isDark ? Colors.blue.shade900 : Colors.blue.shade100,
-                      child: Icon(Icons.account_circle, size: 40, color: isDark ? Colors.blue.shade300 : Colors.blue),
+                      backgroundImage: const NetworkImage('https://raw.githubusercontent.com/amaragita/Tugas-Layout-1/main/Foto%204x6.png'),
+                      onBackgroundImageError: (error, stackTrace) {},
+                      child: Container(), // Supaya tidak ada icon default
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -232,13 +235,32 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  'Pengeluaran Terakhir', 
-                  style: TextStyle(
-                    fontSize: 16, 
-                    fontWeight: FontWeight.bold,
-                    color: theme.textTheme.titleLarge?.color,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Pengeluaran Terakhir', 
+                      style: TextStyle(
+                        fontSize: 16, 
+                        fontWeight: FontWeight.bold,
+                        color: theme.textTheme.titleLarge?.color,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const MainNavigation(initialIndex: 2)),
+                        );
+                      },
+                      child: const Text('Lihat Semua'),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                        minimumSize: Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 if (recentExpenses.isEmpty)

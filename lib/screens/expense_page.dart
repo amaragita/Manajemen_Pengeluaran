@@ -36,10 +36,11 @@ class _ExpensePageState extends State<ExpensePage> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async => true,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Catatan Pengeluaran'),
+          centerTitle: true,
         ),
         body: Column(
           children: [

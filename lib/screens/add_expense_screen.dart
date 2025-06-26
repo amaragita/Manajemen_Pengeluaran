@@ -276,12 +276,13 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: theme.appBarTheme.backgroundColor,
+        backgroundColor: kDarkBlue,
         elevation: 0,
-        iconTheme: theme.appBarTheme.iconTheme ?? IconThemeData(color: theme.colorScheme.primary),
+        iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
         title: Text(
           widget.expense == null ? 'Tambah Pengeluaran' : 'Edit Pengeluaran',
-          style: theme.appBarTheme.titleTextStyle ?? TextStyle(color: theme.colorScheme.onBackground),
+          style: theme.appBarTheme.titleTextStyle?.copyWith(color: Colors.white) ?? const TextStyle(color: Colors.white),
         ),
       ),
       body: Center(

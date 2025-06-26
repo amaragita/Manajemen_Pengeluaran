@@ -50,9 +50,11 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    const String profileImageUrl = 'https://raw.githubusercontent.com/amaragita/Tugas-Layout-1/main/Foto%204x6.png';
     return Scaffold(
       appBar: AppBar(
         title: const Text('Akun'),
+        centerTitle: true,
       ),
       body: Center(
         child: Padding(
@@ -63,17 +65,18 @@ class _AccountPageState extends State<AccountPage> {
               CircleAvatar(
                 radius: 48,
                 backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                child: Icon(Icons.account_circle, size: 80, color: theme.colorScheme.primary),
+                backgroundImage: const NetworkImage(profileImageUrl),
+                onBackgroundImageError: (error, stackTrace) {},
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
+              Text(
+                'Nama Pengguna :',
+                style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+              ),
+              const SizedBox(height: 6),
               Text(
                 _username != null ? _username! : '-',
                 style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Nama Pengguna',
-                style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
               ),
               const SizedBox(height: 32),
               Row(

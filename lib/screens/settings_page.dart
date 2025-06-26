@@ -66,12 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Pengaturan'),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
-              },
-            ),
+            centerTitle: true,
           ),
           body: ListView(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),

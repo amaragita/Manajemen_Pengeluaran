@@ -44,6 +44,7 @@ class _ChartPageState extends State<ChartPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Grafik Pengeluaran'),
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
