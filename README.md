@@ -1,6 +1,8 @@
 # manajemen_pengeluaran
 
-A new Flutter project.
+Nama : Luh Putu Amaragita Tiarani Wicaya
+Kelas : 4C
+NIM : 2315091030
 
 ## Getting Started
 
