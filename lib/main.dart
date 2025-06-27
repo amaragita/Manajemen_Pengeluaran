@@ -6,6 +6,7 @@ import 'screens/main_navigation.dart';
 import 'utils/preferences_helper.dart';
 import 'utils/theme_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,19 +27,7 @@ class MyApp extends StatelessWidget {
             title: 'Manajemen Pengeluaran',
             debugShowCheckedModeBanner: false,
             theme: themeProvider.currentTheme,
-            home: FutureBuilder<String?>(
-              future: PreferencesHelper.getUsername(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Scaffold(
-                    body: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-                return snapshot.hasData ? const MainNavigation() : const LoginScreen();
-              },
-            ),
+            home: const SplashScreen(),
             routes: {
               '/login': (context) => const LoginScreen(),
               '/register': (context) => const RegisterScreen(),

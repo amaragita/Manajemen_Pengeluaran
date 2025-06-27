@@ -55,6 +55,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_native_splash: ^2.3.10
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -110,3 +111,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#ffffff" # warna background splash
+  image: assets/icons/ManajemenPengeluaran.png # path logo
+  branding: null
+  title: PengeluaranKu
+  android: true
+  ios: true
+  web: false
