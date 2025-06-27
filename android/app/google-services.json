@@ -12,7 +12,20 @@
           "package_name": "com.mobile.manajemen_pengeluaran"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "988768703910-dush2gb51fd352sokv06ajvjfeeiahnf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobile.manajemen_pengeluaran",
+            "certificate_hash": "8251e52d85c70b381459ee5263adbb4bb50e5722"
+          }
+        },
+        {
+          "client_id": "988768703910-bagtr0pqid82niestdmr5qdm8uojsu7f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAVQQk8dN6y_dFu3Uo658WWmGI9LJcarqc"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "988768703910-bagtr0pqid82niestdmr5qdm8uojsu7f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

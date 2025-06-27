@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../utils/preferences_helper.dart';
 import 'main_navigation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 // Color palette baru (berdasarkan biru 600)
 const Color kPrimaryColor = Color(0xFF0D3458);      // Biru 600
@@ -77,11 +79,55 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _loginWithGoogle() {
-    // TODO: Implementasi login Google
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login dengan Google belum tersedia')),
-    );
+  Future<void> _loginWithGoogle() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      
+      // Paksa sign out agar selalu muncul pilihan akun Google
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        setState(() {
+          _isLoading = false;
+        });
+        return; // User cancelled
+      }
+      
+      // Get Google authentication
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      
+      // Sign in to Firebase with Google credential
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      
+      // Simpan username "Amaragita" untuk konsistensi data di dashboard
+      await PreferencesHelper.saveUsername('Amaragita');
+      
+      // Langsung masuk ke dashboard
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainNavigation()),
+        );
+      }
+      
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login Google gagal: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
