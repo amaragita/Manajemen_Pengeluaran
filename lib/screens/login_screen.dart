@@ -154,13 +154,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 60),
-                CircleAvatar(
-                  radius: 56,
-                  backgroundColor: kAccentColor,
-                  child: Icon(
-                    Icons.monetization_on,
-                    size: 56,
-                    color: kPrimaryColor,
+                SizedBox(
+                  height: 112,
+                  width: 112,
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/icons/ManajemenPengeluaran.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 60),
@@ -287,23 +288,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Container(
-                                width: 24,
-                                height: 24,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'G',
-                                    style: TextStyle(
-                                      color: Color(0xFF4285F4),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
-                                  ),
-                                ),
+                              Image.asset(
+                                'assets/icons/google.png',
+                                width: 20,
+                                height: 20,
                               ),
                               const SizedBox(width: 12),
                               const Text(
