@@ -11,9 +11,14 @@ import 'package:http/http.dart' as http;
 
 const Color kDarkBlue = Color(0xFF0D3458);
 
+// ======================
+// AddExpenseScreen
+// Halaman untuk tambah/edit pengeluaran, termasuk upload foto bukti
+// ======================
 class AddExpenseScreen extends StatefulWidget {
   final Expense? expense;
 
+  // Konstruktor menerima data expense jika mode edit
   const AddExpenseScreen({super.key, this.expense});
 
   @override
@@ -21,12 +26,19 @@ class AddExpenseScreen extends StatefulWidget {
 }
 
 class _AddExpenseScreenState extends State<AddExpenseScreen> {
+  // Key untuk validasi form
   final _formKey = GlobalKey<FormState>();
+  // Controller untuk input deskripsi
   final _descriptionController = TextEditingController();
+  // Controller untuk input jumlah
   final _amountController = TextEditingController();
+  // State tanggal yang dipilih
   late DateTime _selectedDate;
+  // State kategori yang dipilih
   String _selectedCategory = 'Makanan';
+  // Path gambar bukti (bisa lokal/file atau url)
   String? _imagePath;
+  // ImagePicker untuk ambil gambar
   final ImagePicker _picker = ImagePicker();
 
   final List<String> _categories = [
@@ -42,6 +54,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   void initState() {
     super.initState();
+    // Jika mode edit, isi field dengan data expense lama
     if (widget.expense != null) {
       _descriptionController.text = widget.expense!.description;
       _amountController.text = _thousandFormat.format(widget.expense!.amount);
@@ -49,8 +62,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       _selectedCategory = widget.expense!.category;
       _imagePath = widget.expense!.imagePath;
     } else {
+      // Jika tambah baru, tanggal default hari ini
       _selectedDate = DateTime.now();
     }
+    // Listener untuk format input jumlah
     _amountController.addListener(_formatAmountInput);
   }
 
@@ -102,6 +117,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     }
   }
 
+  //Fungsi utama untuk menyimpan pengeluaran
   void _saveExpense() async {
     if (_formKey.currentState!.validate()) {
       String? imageUrl;
@@ -243,7 +259,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 
+  // DITAMBAHKAN: Komentar - Fungsi untuk upload gambar ke Imgur
   Future<String?> _uploadImageToImgur(String imagePath) async {
+    // Ganti clientId dengan milikmu jika perlu
     const clientId = 'ce914dbe81f558a';
     final url = Uri.parse('https://api.imgur.com/3/image');
     final imageBytes = await File(imagePath).readAsBytes();
@@ -300,6 +318,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // ======================
+                      // Input Deskripsi
+                      // ======================
                       TextFormField(
                         controller: _descriptionController,
                         style: theme.textTheme.bodyLarge,
@@ -319,6 +340,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         },
                       ),
                       const SizedBox(height: 18),
+                      // ======================
+                      // Input Jumlah
+                      // ======================
                       TextFormField(
                         controller: _amountController,
                         style: theme.textTheme.bodyLarge,
@@ -343,6 +367,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         },
                       ),
                       const SizedBox(height: 18),
+                      // ======================
+                      // Input Tanggal
+                      // ======================
                       InkWell(
                         onTap: () => _selectDate(context),
                         borderRadius: BorderRadius.circular(12),
@@ -365,6 +392,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         ),
                       ),
                       const SizedBox(height: 18),
+                      // ======================
+                      // Dropdown Kategori
+                      // ======================
                       DropdownButtonFormField<String>(
                         value: _selectedCategory,
                         style: theme.textTheme.bodyLarge,
@@ -392,7 +422,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         },
                       ),
                       const SizedBox(height: 18),
-                      // Image Section
+                      // ======================
+                      // Upload/Tampil Gambar Bukti
+                      // ======================
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -466,6 +498,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         ],
                       ),
                       const SizedBox(height: 28),
+                      // ======================
+                      // Tombol Simpan
+                      // ======================
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton(
