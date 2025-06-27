@@ -50,7 +50,7 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    const String profileImageUrl = 'https://raw.githubusercontent.com/amaragita/Tugas-Layout-1/main/Foto%204x6.png';
+    const String profileImageUrl = 'https://raw.githubusercontent.com/amaragita/Tugas-Layout-1/main/Foto%204x6.png'; //diambil dari github
     return Scaffold(
       appBar: AppBar(
         title: const Text('Akun'),
