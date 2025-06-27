@@ -37,6 +37,23 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           _isLoading = true;
         });
+        
+        // Validasi username dan password
+        if (_usernameController.text != "Amaragita") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Nama pengguna salah')),
+          );
+          return;
+        }
+        
+        if (_passwordController.text != "2315091030") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Kata sandi salah')),
+          );
+          return;
+        }
+        
+        // Login berhasil
         await PreferencesHelper.saveUsername(_usernameController.text);
         if (mounted) {
           Navigator.pushReplacement(
@@ -143,9 +160,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Mohon masukkan kata sandi';
-                          }
-                          if (value.length < 6) {
-                            return 'Kata sandi minimal 6 karakter';
                           }
                           return null;
                         },

@@ -122,92 +122,120 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               // Rating Bintang
-              ListTile(
-                leading: const Icon(Icons.star_border),
-                title: const Text('Beri Rating Aplikasi'),
-                trailing: const Icon(Icons.chevron_right),
-                subtitle: _rating > 0
-                    ? Row(
-                        children: List.generate(5, (index) => Icon(
-                          index < _rating ? Icons.star : Icons.star_border,
-                          color: Colors.amber,
-                          size: 20,
-                        )),
-                      )
-                    : null,
-                onTap: _showRatingDialog,
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: ListTile(
+                  leading: const Icon(Icons.star_border),
+                  title: const Text('Beri Rating Aplikasi'),
+                  trailing: const Icon(Icons.chevron_right),
+                  subtitle: _rating > 0
+                      ? Row(
+                          children: List.generate(5, (index) => Icon(
+                            index < _rating ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 20,
+                          )),
+                        )
+                      : null,
+                  onTap: _showRatingDialog,
+                ),
               ),
               // Share App
-              ListTile(
-                leading: const Icon(Icons.share),
-                title: const Text('Bagikan Aplikasi'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  _openDummyPage(
-                    'Bagikan Aplikasi',
-                    'Bagikan aplikasi ini ke teman-temanmu agar mereka juga bisa mengelola keuangan dengan mudah!\n\nFitur bagikan aplikasi akan segera tersedia.'
-                  );
-                },
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: ListTile(
+                  leading: const Icon(Icons.share),
+                  title: const Text('Bagikan Aplikasi'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    _openDummyPage(
+                      'Bagikan Aplikasi',
+                      'Bagikan aplikasi ini ke teman-temanmu agar mereka juga bisa mengelola keuangan dengan mudah!\n\nFitur bagikan aplikasi akan segera tersedia.'
+                    );
+                  },
+                ),
               ),
               // Privacy Policy
-              ListTile(
-                leading: const Icon(Icons.lock_outline),
-                title: const Text('Kebijakan Privasi'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  _openDummyPage(
-                    'Kebijakan Privasi',
-                    'Kami menghargai privasi Anda.\nData pengguna hanya digunakan untuk keperluan aplikasi dan tidak dibagikan ke pihak ketiga.\n\nUntuk info lebih lanjut, silakan hubungi kami melalui menu Kontak.'
-                  );
-                },
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: ListTile(
+                  leading: const Icon(Icons.lock_outline),
+                  title: const Text('Kebijakan Privasi'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    _openDummyPage(
+                      'Kebijakan Privasi',
+                      'Kami menghargai privasi Anda.\nData pengguna hanya digunakan untuk keperluan aplikasi dan tidak dibagikan ke pihak ketiga.\n\nUntuk info lebih lanjut, silakan hubungi kami melalui menu Kontak.'
+                    );
+                  },
+                ),
               ),
               // Terms and Conditions
-              ListTile(
-                leading: const Icon(Icons.description_outlined),
-                title: const Text('Syarat & Ketentuan'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  _openDummyPage(
-                    'Syarat & Ketentuan',
-                    'Dengan menggunakan aplikasi ini, Anda setuju untuk mematuhi semua aturan yang berlaku.\n\nAplikasi ini hanya untuk penggunaan pribadi dan tidak untuk tujuan komersial tanpa izin.'
-                  );
-                },
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: ListTile(
+                  leading: const Icon(Icons.description_outlined),
+                  title: const Text('Syarat & Ketentuan'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    _openDummyPage(
+                      'Syarat & Ketentuan',
+                      'Dengan menggunakan aplikasi ini, Anda setuju untuk mematuhi semua aturan yang berlaku.\n\nAplikasi ini hanya untuk penggunaan pribadi dan tidak untuk tujuan komersial tanpa izin.'
+                    );
+                  },
+                ),
               ),
               // Cookies Policy
-              ListTile(
-                leading: const Icon(Icons.insert_drive_file_outlined),
-                title: const Text('Kebijakan Cookie'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  _openDummyPage(
-                    'Kebijakan Cookie',
-                    'Aplikasi ini menggunakan cookie untuk meningkatkan pengalaman pengguna.\n\nCookie tidak digunakan untuk melacak aktivitas di luar aplikasi.'
-                  );
-                },
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: ListTile(
+                  leading: const Icon(Icons.insert_drive_file_outlined),
+                  title: const Text('Kebijakan Cookie'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    _openDummyPage(
+                      'Kebijakan Cookie',
+                      'Aplikasi ini menggunakan cookie untuk meningkatkan pengalaman pengguna.\n\nCookie tidak digunakan untuk melacak aktivitas di luar aplikasi.'
+                    );
+                  },
+                ),
               ),
               // Contact
-              ListTile(
-                leading: const Icon(Icons.mail_outline),
-                title: const Text('Kontak'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  _openDummyPage(
-                    'Kontak',
-                    'Hubungi kami untuk pertanyaan, bantuan, atau kerjasama:\n\nEmail: admin@manajemenkeuangan.com\nWhatsApp: 0812-3456-7890\n\nKami akan membalas secepatnya!'
-                  );
-                },
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: ListTile(
+                  leading: const Icon(Icons.mail_outline),
+                  title: const Text('Kontak'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    _openDummyPage(
+                      'Kontak',
+                      'Hubungi kami untuk pertanyaan, bantuan, atau kerjasama:\n\nEmail: admin@manajemenpengeluaran.com\nWhatsApp: 0812-3456-7890\n\nKami akan membalas secepatnya!'
+                    );
+                  },
+                ),
               ),
               // Feedback
-              ListTile(
-                leading: const Icon(Icons.chat_bubble_outline),
-                title: const Text('Masukan & Saran'),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  _openDummyPage(
-                    'Masukan & Saran',
-                    'Kami sangat menghargai masukan dan saran dari Anda!\n\nSilakan kirimkan ide, kritik, atau saran Anda melalui email ke:\nfeedback@manajemenkeuangan.com\n\nBersama kita buat aplikasi ini lebih baik!'
-                  );
-                },
+              Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                child: ListTile(
+                  leading: const Icon(Icons.chat_bubble_outline),
+                  title: const Text('Masukan & Saran'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    _openDummyPage(
+                      'Masukan & Saran',
+                      'Kami sangat menghargai masukan dan saran dari Anda!\n\nSilakan kirimkan ide, kritik, atau saran Anda melalui email ke:\nfeedback@manajemenkeuangan.com\n\nBersama kita buat aplikasi ini lebih baik!'
+                    );
+                  },
+                ),
               ),
             ],
           ),
