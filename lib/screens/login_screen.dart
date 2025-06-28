@@ -39,23 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           _isLoading = true;
         });
-        
-        // Validasi username dan password
-        if (_usernameController.text != "Amaragita") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Nama pengguna salah')),
-          );
-          return;
-        }
-        
-        if (_passwordController.text != "2315091030") {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Kata sandi salah')),
-          );
-          return;
-        }
-        
-        // Login berhasil
+        // Simpan username apapun yang diinput user
         await PreferencesHelper.saveUsername(_usernameController.text);
         if (mounted) {
           Navigator.pushReplacement(

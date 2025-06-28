@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PreferencesHelper {
   static const String _keyUsername = 'username';
   static const String _keyBudget = 'monthly_budget';
+  static const String _keyPassword = 'password';
 
   static Future<void> saveUsername(String username) async {
     print('Saving username: $username');
@@ -32,6 +33,16 @@ class PreferencesHelper {
     final budget = prefs.getDouble(_keyBudget) ?? 0.0;
     print('Retrieved budget: $budget');
     return budget;
+  }
+
+  static Future<void> savePassword(String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyPassword, password);
+  }
+
+  static Future<String?> getPassword() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyPassword);
   }
 
   static Future<void> clearAll() async {

@@ -111,9 +111,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     CircleAvatar(
                       radius: 28,
                       backgroundColor: isDark ? Colors.blue.shade900 : Colors.blue.shade100,
-                      backgroundImage: const NetworkImage('https://raw.githubusercontent.com/amaragita/Tugas-Layout-1/main/Foto%204x6.png'),
-                      onBackgroundImageError: (error, stackTrace) {},
-                      child: Container(), // Supaya tidak ada icon default
+                      child: Icon(Icons.person, size: 32, color: theme.colorScheme.primary),
                     ),
                     const SizedBox(width: 16),
                     Expanded(

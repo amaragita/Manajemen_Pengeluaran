@@ -46,11 +46,67 @@ class _AccountPageState extends State<AccountPage> {
     });
   }
 
+  void _showEditDialog() async {
+    final usernameController = TextEditingController(text: _username ?? '');
+    final passwordController = TextEditingController();
+    final currentPassword = await PreferencesHelper.getPassword() ?? '';
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Profil'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(labelText: 'Username'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Password Baru',
+                  hintText: currentPassword.isNotEmpty ? 'Biarkan kosong jika tidak ingin mengubah' : null,
+                ),
+                obscureText: true,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final newUsername = usernameController.text.trim();
+                final newPassword = passwordController.text.trim();
+                if (newUsername.isEmpty) return;
+                await PreferencesHelper.saveUsername(newUsername);
+                if (newPassword.isNotEmpty) {
+                  await PreferencesHelper.savePassword(newPassword);
+                }
+                setState(() {
+                  _username = newUsername;
+                });
+                if (mounted) Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Profil berhasil diperbarui!')),
+                );
+              },
+              child: const Text('Simpan'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    const String profileImageUrl = 'https://raw.githubusercontent.com/amaragita/Tugas-Layout-1/main/Foto%204x6.png'; //diambil dari github
     return Scaffold(
       appBar: AppBar(
         title: const Text('Akun'),
@@ -59,104 +115,64 @@ class _AccountPageState extends State<AccountPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Header dengan foto dan info pengguna
+            const SizedBox(height: 56),
+            // Header dengan icon orang dan info pengguna
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Foto profil
                     CircleAvatar(
-                      radius: 40,
+                      radius: 48,
                       backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                      backgroundImage: const NetworkImage(profileImageUrl),
-                      onBackgroundImageError: (error, stackTrace) {},
+                      child: Icon(Icons.person, size: 60, color: theme.colorScheme.primary),
                     ),
-                    const SizedBox(width: 16),
-                    // Info pengguna
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Luh Putu Amaragita Tiarani Wicaya',
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green.shade100,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'Mahasiswa',
-                              style: TextStyle(
-                                color: Colors.green.shade700,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '@${_username ?? 'user'}',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.hintColor,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ],
+                    const SizedBox(height: 16),
+                    Text(
+                      _username ?? 'User',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    // Tombol edit username & password
+                    TextButton.icon(
+                      onPressed: _showEditDialog,
+                      icon: Icon(Icons.edit, size: 18, color: theme.colorScheme.primary),
+                      label: Text('Edit Profil', style: TextStyle(color: theme.colorScheme.primary)),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                        minimumSize: Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        'Pengguna Aplikasi',
+                        style: TextStyle(
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Informasi Akademik
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.school, color: theme.colorScheme.primary, size: 24),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Informasi Akademik',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    _InfoRow(icon: Icons.business, label: 'Universitas', value: 'Universitas Pendidikan Ganesha'),
-                    _InfoRow(icon: Icons.school, label: 'Program Studi', value: 'Sistem Informasi'),
-                    _InfoRow(icon: Icons.grade, label: 'Semester', value: '4'),
-                    _InfoRow(icon: Icons.badge, label: 'NIM', value: '2315091030'),
-                  ],
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
+            const SizedBox(height: 70),
             // Statistik Pengeluaran
             Text(
               'Statistik Pengeluaran',
@@ -186,42 +202,7 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ],
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Informasi Kontak
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.contact_mail, color: theme.colorScheme.primary, size: 24),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Informasi Kontak',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    _InfoRow(icon: Icons.email, label: 'Email', value: 'amaragita@student.undiksha.ac.id'),
-                    _InfoRow(icon: Icons.phone, label: 'WhatsApp', value: '0897-7217-561'),
-                    _InfoRow(icon: Icons.location_on, label: 'Alamat', value: 'Denpasar, Bali'),
-                  ],
-                ),
-              ),
-            ),
-            
             const SizedBox(height: 32),
-            
             // Tombol Logout
             SizedBox(
               width: double.infinity,
