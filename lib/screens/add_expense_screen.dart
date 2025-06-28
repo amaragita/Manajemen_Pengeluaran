@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/expense.dart';
-import '../database/database_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -120,59 +119,56 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   //Fungsi utama untuk menyimpan pengeluaran
   void _saveExpense() async {
     if (_formKey.currentState!.validate()) {
-      String? imageUrl;
-      if (_imagePath != null) {
-        if (_imagePath!.startsWith('http')) {
-          // Sudah berupa URL, tidak perlu upload ulang
-          imageUrl = _imagePath;
-        } else {
-          // Path lokal, upload ke Imgur
-          imageUrl = await _uploadImageToImgur(_imagePath!);
+      try {
+        String? imageUrl;
+        if (_imagePath != null) {
+          if (_imagePath!.startsWith('http')) {
+            imageUrl = _imagePath;
+          } else {
+            imageUrl = await _uploadImageToImgur(_imagePath!);
+          }
         }
-      }
 
-      final expense = Expense(
-        id: widget.expense?.id,
-        description: _descriptionController.text,
-        amount: double.parse(_amountController.text.replaceAll('.', '').replaceAll(',', '')),
-        date: _selectedDate,
-        category: _selectedCategory,
-        imagePath: imageUrl,
-      );
+        final expense = Expense(
+          description: _descriptionController.text,
+          amount: double.parse(_amountController.text.replaceAll('.', '').replaceAll(',', '')),
+          date: _selectedDate,
+          category: _selectedCategory,
+          imagePath: imageUrl,
+        );
 
-      if (widget.expense == null) {
-        int newId = await DatabaseHelper.instance.insertExpense(expense);
-        await FirebaseFirestore.instance.collection('Catatan Pengeluaran').add({
-          'id': newId,
-          'description': expense.description,
-          'amount': expense.amount,
-          'date': Timestamp.fromDate(expense.date),
-          'category': expense.category,
-          'imagePath': expense.imagePath,
-        });
-      } else {
-        await DatabaseHelper.instance.updateExpense(expense);
-        final query = await FirebaseFirestore.instance
-            .collection('Catatan Pengeluaran')
-            .where('id', isEqualTo: expense.id)
-            .get();
-        if (query.docs.isNotEmpty) {
-          await FirebaseFirestore.instance
-              .collection('Catatan Pengeluaran')
-              .doc(query.docs.first.id)
-              .update({
-            'id': expense.id,
+        if (widget.expense == null) {
+          await FirebaseFirestore.instance.collection('Catatan Pengeluaran').add({
             'description': expense.description,
             'amount': expense.amount,
             'date': Timestamp.fromDate(expense.date),
             'category': expense.category,
             'imagePath': expense.imagePath,
           });
+        } else {
+          // Tidak ada id, update tidak bisa dilakukan dengan where('id', ...)
+          // Solusi: tampilkan pesan error
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Edit pengeluaran tidak didukung setelah penghapusan SQLite.')), 
+            );
+          }
+          return;
         }
-      }
 
-      if (mounted) {
-        Navigator.pop(context, true);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Pengeluaran berhasil disimpan!')),
+          );
+          Navigator.pop(context, true);
+        }
+      } catch (e) {
+        print('=== ERROR: $e ===');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error menyimpan data: $e')),
+          );
+        }
       }
     }
   }
