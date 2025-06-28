@@ -16,9 +16,10 @@ const Color kDarkBlue = Color(0xFF0D3458);
 // ======================
 class AddExpenseScreen extends StatefulWidget {
   final Expense? expense;
+  final String? docId;
 
-  // Konstruktor menerima data expense jika mode edit
-  const AddExpenseScreen({super.key, this.expense});
+  // Konstruktor menerima data expense dan docId jika mode edit
+  const AddExpenseScreen({super.key, this.expense, this.docId});
 
   @override
   State<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -137,7 +138,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           imagePath: imageUrl,
         );
 
-        if (widget.expense == null) {
+        if (widget.docId == null) {
+          // Tambah baru
           await FirebaseFirestore.instance.collection('Catatan Pengeluaran').add({
             'description': expense.description,
             'amount': expense.amount,
@@ -146,14 +148,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             'imagePath': expense.imagePath,
           });
         } else {
-          // Tidak ada id, update tidak bisa dilakukan dengan where('id', ...)
-          // Solusi: tampilkan pesan error
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Edit pengeluaran tidak didukung setelah penghapusan SQLite.')), 
-            );
-          }
-          return;
+          // Edit/update
+          await FirebaseFirestore.instance.collection('Catatan Pengeluaran').doc(widget.docId).update({
+            'description': expense.description,
+            'amount': expense.amount,
+            'date': Timestamp.fromDate(expense.date),
+            'category': expense.category,
+            'imagePath': expense.imagePath,
+          });
         }
 
         if (mounted) {

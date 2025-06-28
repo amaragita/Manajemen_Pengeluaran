@@ -267,6 +267,7 @@ class _ExpensePageState extends State<ExpensePage> {
         category: data['category'],
         imagePath: data.containsKey('imagePath') ? data['imagePath'] : null,
       ),
+      docId: doc.id,
     );
     await Navigator.push(
       context,
