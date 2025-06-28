@@ -90,8 +90,8 @@ class _LoginScreenState extends State<LoginScreen> {
       // Sign in to Firebase with Google credential
       await FirebaseAuth.instance.signInWithCredential(credential);
       
-      // Simpan username "Amaragita" untuk konsistensi data di dashboard
-      await PreferencesHelper.saveUsername('Amaragita');
+      // Simpan username dari akun Google
+      await PreferencesHelper.saveUsername(googleUser.displayName ?? 'User');
       
       // Langsung masuk ke dashboard
       if (mounted) {
