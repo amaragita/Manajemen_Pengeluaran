@@ -261,7 +261,6 @@ class _ExpensePageState extends State<ExpensePage> {
     final data = doc.data() as Map<String, dynamic>;
     final expense = AddExpenseScreen(
       expense: Expense(
-        id: data['id'],
         description: data['description'],
         amount: data['amount'] is int ? (data['amount'] as int).toDouble() : data['amount'],
         date: (data['date'] as Timestamp).toDate(),
