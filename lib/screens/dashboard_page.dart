@@ -4,10 +4,12 @@ import '../utils/preferences_helper.dart';
 import '../models/expense.dart';
 import 'package:intl/intl.dart';
 import 'main_navigation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'login_screen.dart';
 
 class DashboardPage extends StatefulWidget {
-  final VoidCallback onLogout;
-  const DashboardPage({Key? key, required this.onLogout}) : super(key: key);
+  const DashboardPage({Key? key}) : super(key: key);
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -67,7 +69,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               );
               if (result == true) {
-                widget.onLogout();
+                await _performLogout();
               }
             },
             tooltip: 'Logout',
@@ -324,6 +326,34 @@ class _DashboardPageState extends State<DashboardPage> {
         return Icons.more_horiz;
       default:
         return Icons.receipt_long;
+    }
+  }
+
+  Future<void> _performLogout() async {
+    try {
+      // Sign out dari Firebase Auth
+      await FirebaseAuth.instance.signOut();
+      
+      // Sign out dari Google Sign In
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
+      
+      // Hapus data autentikasi dari SharedPreferences
+      await PreferencesHelper.logout();
+      
+      // Navigasi ke login screen dan hapus semua route sebelumnya
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal logout: $e')),
+        );
+      }
     }
   }
 } 
