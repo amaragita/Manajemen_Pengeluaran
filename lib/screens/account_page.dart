@@ -3,12 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/preferences_helper.dart';
 import 'package:intl/intl.dart';
 import 'main_navigation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'login_screen.dart';
 
 const Color kDarkBlue = Color(0xFF0D3458);
 
 class AccountPage extends StatefulWidget {
-  final VoidCallback onLogout;
-  const AccountPage({Key? key, required this.onLogout}) : super(key: key);
+  const AccountPage({Key? key}) : super(key: key);
 
   @override
   State<AccountPage> createState() => _AccountPageState();
@@ -226,7 +228,7 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   );
                   if (result == true) {
-                    widget.onLogout();
+                    await _performLogout();
                   }
                 },
                 icon: const Icon(Icons.logout),
@@ -245,6 +247,38 @@ class _AccountPageState extends State<AccountPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _performLogout() async {
+    try {
+      // Sign out dari Firebase Auth
+      await FirebaseAuth.instance.signOut();
+      
+      // Sign out dari Google Sign In
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
+      
+      // Hapus data autentikasi dari SharedPreferences
+      await PreferencesHelper.logout();
+      
+      // Verifikasi username sudah terhapus
+      final usernameAfterLogout = await PreferencesHelper.getUsername();
+      print('Username after logout: $usernameAfterLogout');
+      
+      // Navigasi ke login screen dan hapus semua route sebelumnya
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal logout: $e')),
+        );
+      }
+    }
   }
 }
 
