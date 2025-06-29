@@ -51,4 +51,13 @@ class PreferencesHelper {
     await prefs.clear();
     print('All preferences cleared');
   }
+
+  static Future<void> logout() async {
+    print('Logging out...');
+    final prefs = await SharedPreferences.getInstance();
+    // Hapus username dan password, tapi biarkan budget
+    await prefs.remove(_keyUsername);
+    await prefs.remove(_keyPassword);
+    print('Logout completed - username and password removed');
+  }
 } 
